@@ -9,6 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import seaborn as sns
 from matplotlib import font_manager
+import os
 
 # 设置中文字体
 font_path = 'C:/Windows/Fonts/simhei.ttf'  # 请根据你的系统调整字体路径
@@ -98,6 +99,10 @@ coef_df = coef_df.sort_values(by='系数', key=abs, ascending=False)
 # 根据系数的正负设置颜色
 colors = ['red' if c < 0 else 'green' for c in coef_df['系数']]
 
+# 创建visualizations文件夹
+visualizations_path = 'visualizations'
+os.makedirs(visualizations_path, exist_ok=True)
+
 # 可视化系数（只展示前20个最重要的特征）
 top_n = min(20, len(coef_df))
 plt.figure(figsize=(10, 12))
@@ -107,9 +112,38 @@ plt.title('逻辑回归系数（绿色为正向影响，红色为负向影响）
 plt.xlabel('系数值')
 plt.ylabel('特征')
 plt.tight_layout()
-plt.savefig('E:/知乎-AIGC-工程师/1.主干课/@4.10/3.作业/CASE-客户续保预测/visualizations/logistic_regression_coefficients.png')
+plt.savefig(os.path.join(visualizations_path, 'logistic_regression_coefficients.png'))
 plt.show()
 
+# 打印并保存逻辑回归模型的结果
+accuracy = accuracy_score(y_test, y_pred)
+classification_rep = classification_report(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+# 打印结果
+print(f'准确率: {accuracy:.4f}')
+print('\n分类报告:')
+print(classification_rep)
+print('\n混淆矩阵:')
+print(conf_matrix)
+
 # 输出特征重要性排名
-print("\n特征重要性排名（按系数绝对值）:")
+print('\n特征重要性排名（按系数绝对值）:')
 print(coef_df[['特征', '系数']].head(top_n))
+
+# 生成解释文档
+explanation_path = '逻辑回归解释.md'
+with open(explanation_path, 'w', encoding='utf-8') as f:
+    f.write('# 逻辑回归模型结果解释\n\n')
+    f.write(f'## 准确率\n准确率为: {accuracy:.4f}\n\n')
+    f.write('## 分类报告\n')
+    f.write(classification_rep + '\n')
+    f.write('## 混淆矩阵\n')
+    f.write(str(conf_matrix) + '\n\n')
+    f.write('## 特征重要性排名（按系数绝对值）\n')
+    f.write(coef_df[['特征', '系数']].head(top_n).to_string(index=False) + '\n\n')
+    f.write('### 解释\n')
+    f.write('1. **准确率**：模型在测试集上的预测准确率。\n')
+    f.write('2. **分类报告**：包括精确率、召回率和F1分数等指标。\n')
+    f.write('3. **混淆矩阵**：显示预测结果的分布情况。\n')
+    f.write('4. **特征重要性**：根据逻辑回归系数的绝对值，评估特征对模型的影响。\n')

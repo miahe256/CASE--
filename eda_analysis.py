@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import font_manager
+import os
 
 # 设置中文字体
 font_path = 'C:/Windows/Fonts/simhei.ttf'  # 请根据你的系统调整字体路径
@@ -23,17 +24,21 @@ print(data.describe())
 print("\n缺失值分析：")
 print(data.isnull().sum())
 
+# 创建visualizations文件夹
+visualizations_path = 'visualizations'
+os.makedirs(visualizations_path, exist_ok=True)
+
 # 数值型数据分布
 data.hist(bins=30, figsize=(10, 8))
 plt.suptitle('数值型数据分布')
-plt.savefig('E:/知乎-AIGC-工程师/1.主干课/@4.10/3.作业/CASE-客户续保预测/visualizations/numeric_distribution.png')
+plt.savefig(os.path.join(visualizations_path, 'numeric_distribution.png'))
 plt.show()
 
 # 箱线图
 plt.figure(figsize=(10, 6))
 sns.boxplot(data=data)
 plt.title('数值型数据箱线图')
-plt.savefig('E:/知乎-AIGC-工程师/1.主干课/@4.10/3.作业/CASE-客户续保预测/visualizations/boxplot.png')
+plt.savefig(os.path.join(visualizations_path, 'boxplot.png'))
 plt.show()
 
 # 类别型数据分析
@@ -44,7 +49,7 @@ for column in data.select_dtypes(include=['object']).columns:
     plt.figure(figsize=(10, 6))
     sns.countplot(y=column, data=data, order=data[column].value_counts().index)
     plt.title(f'{column}分布')
-    plt.savefig(f'E:/知乎-AIGC-工程师/1.主干课/@4.10/3.作业/CASE-客户续保预测/visualizations/{column}_distribution.png')
+    plt.savefig(os.path.join(visualizations_path, f'{column}_distribution.png'))
     plt.show()
 
 # 相关性分析（仅数值型数据）
@@ -52,5 +57,5 @@ plt.figure(figsize=(10, 8))
 numeric_data = data.select_dtypes(include=['number'])
 sns.heatmap(numeric_data.corr(), annot=True, cmap='coolwarm')
 plt.title('特征相关性')
-plt.savefig('E:/知乎-AIGC-工程师/1.主干课/@4.10/3.作业/CASE-客户续保预测/visualizations/correlation_heatmap.png')
+plt.savefig(os.path.join(visualizations_path, 'correlation_heatmap.png'))
 plt.show()

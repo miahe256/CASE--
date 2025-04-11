@@ -11,6 +11,7 @@ import seaborn as sns
 from matplotlib import font_manager
 import graphviz
 from sklearn import tree
+import os
 
 # 设置中文字体
 font_path = 'C:/Windows/Fonts/simhei.ttf'  # 请根据你的系统调整字体路径
@@ -83,6 +84,10 @@ for i, cat_feature in enumerate(categorical_features):
 
 feature_names = numeric_features + cat_features_encoded
 
+# 创建visualizations文件夹
+visualizations_path = 'visualizations'
+os.makedirs(visualizations_path, exist_ok=True)
+
 # 创建决策树可视化
 plt.figure(figsize=(20, 10))
 tree.plot_tree(decision_tree, 
@@ -91,7 +96,7 @@ tree.plot_tree(decision_tree,
                filled=True, 
                fontsize=10)
 plt.title('决策树模型（深度=3）')
-plt.savefig('E:/知乎-AIGC-工程师/1.主干课/@4.10/3.作业/CASE-客户续保预测/visualizations/decision_tree.png', dpi=300)
+plt.savefig(os.path.join(visualizations_path, 'decision_tree.png'), dpi=300)
 plt.show()
 
 # 输出决策树规则
@@ -187,5 +192,45 @@ plt.figure(figsize=(10, 6))
 sns.barplot(x='重要性', y='特征', data=feature_importance.head(10))
 plt.title('决策树特征重要性（前10个）')
 plt.tight_layout()
-plt.savefig('E:/知乎-AIGC-工程师/1.主干课/@4.10/3.作业/CASE-客户续保预测/visualizations/decision_tree_feature_importance.png')
+plt.savefig(os.path.join(visualizations_path, 'decision_tree_feature_importance.png'))
 plt.show()
+
+# 打印并保存决策树模型的结果
+accuracy = accuracy_score(y_test, y_pred)
+classification_rep = classification_report(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+# 打印结果
+print(f'准确率: {accuracy:.4f}')
+print('\n分类报告:')
+print(classification_rep)
+print('\n混淆矩阵:')
+print(conf_matrix)
+
+# 输出决策树规则
+print('\n决策树规则:')
+print(tree_rules)
+
+# 输出特征重要性
+print('\n特征重要性:')
+print(feature_importance.head(10))
+
+# 生成解释文档
+explanation_path = '决策树解释.md'
+with open(explanation_path, 'w', encoding='utf-8') as f:
+    f.write('# 决策树模型结果解释\n\n')
+    f.write(f'## 准确率\n准确率为: {accuracy:.4f}\n\n')
+    f.write('## 分类报告\n')
+    f.write(classification_rep + '\n')
+    f.write('## 混淆矩阵\n')
+    f.write(str(conf_matrix) + '\n\n')
+    f.write('## 决策树规则\n')
+    f.write(tree_rules + '\n\n')
+    f.write('## 特征重要性（前10个）\n')
+    f.write(feature_importance.head(10).to_string(index=False) + '\n\n')
+    f.write('### 解释\n')
+    f.write('1. **准确率**：模型在测试集上的预测准确率。\n')
+    f.write('2. **分类报告**：包括精确率、召回率和F1分数等指标。\n')
+    f.write('3. **混淆矩阵**：显示预测结果的分布情况。\n')
+    f.write('4. **决策树规则**：展示决策树的分支规则。\n')
+    f.write('5. **特征重要性**：根据特征对模型的影响进行排序。\n')
