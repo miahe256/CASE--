@@ -1,0 +1,23 @@
+决策树规则:
+|--- age <= 29.50
+|   |--- marital_status_单身 <= 0.50
+|   |   |--- claim_history_是 <= 0.50
+|   |   |   |--- class: 0
+|   |   |--- claim_history_是 >  0.50
+|   |   |   |--- class: 0
+|   |--- marital_status_单身 >  0.50
+|   |   |--- occupation_设计师 <= 0.50
+|   |   |   |--- class: 1
+|   |   |--- occupation_设计师 >  0.50
+|   |   |   |--- class: 0
+|--- age >  29.50
+|   |--- age <= 60.50
+|   |   |--- occupation_经理 <= 0.50
+|   |   |   |--- class: 1
+|   |   |--- occupation_经理 >  0.50
+|   |   |   |--- class: 1
+|   |--- age >  60.50
+|   |   |--- marital_status_单身 <= 0.50
+|   |   |   |--- class: 0
+|   |   |--- marital_status_单身 >  0.50
+|   |   |   |--- class: 1
